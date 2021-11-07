@@ -5,7 +5,7 @@ public class MainClassTest {
     @Test
     public void testGetLocalNumber(){
         MainClass mainClass = new MainClass();
-        Assert.assertTrue("Function testGetLocalNumber() is expected to be 14",
-                mainClass.getLocalNumber() == 14);
+        Assert.assertTrue("Function getClassNumber() is expected to be greater than 45",
+                mainClass.getClassNumber() > 45);
     }
 }
