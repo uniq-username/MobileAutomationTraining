@@ -1,6 +1,10 @@
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+
 public class MainClassTest {
     @Test
     public void testGetClassString(){
