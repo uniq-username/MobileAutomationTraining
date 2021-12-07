@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
@@ -14,7 +15,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.util.List;
 
 public class FirstTest {
     private AppiumDriver driver;
@@ -50,10 +53,49 @@ public class FirstTest {
     @Test
     public void searchFieldContainsText()
     {
-        By by = By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.view.ViewGroup/android.support.v4.view.ViewPager/android.view.ViewGroup/android.widget.FrameLayout/android.support.v7.widget.RecyclerView/android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.TextView");
-        //Поиск элемента по xpath
+        //локатор строки поиска на главной странице по xpath
+        By textField = By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.view.ViewGroup/android.support.v4.view.ViewPager/android.view.ViewGroup/android.widget.FrameLayout/android.support.v7.widget.RecyclerView/android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.TextView");
+        //локатор строки поиска на странице поиска по id
+        By searchField = By.id("org.wikipedia:id/search_src_text");
+        //локатор результатов поиска
+        By searResults = By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout[1]/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ListView/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TextView");
+        //локатор первого результата поиска
+        By firstSearchResult = By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout[1]/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ListView/android.widget.LinearLayout[4]/android.widget.LinearLayout/android.widget.TextView");
+        //локатор кнопки сброса поиска
+        By cancelSearchButton = By.id("org.wikipedia:id/search_close_btn");
+        //локатор изображения страницы поиска без результатов
+        By emptySearchImg = By.id("org.wikipedia:id/search_empty_image");
+        //локатор текста страницы поиска без результатов
+        By emptySearchText = By.id("org.wikipedia:id/search_empty_message");
 
-        assertElementHasText(by, "Поиск по Википедии", "Element text does not match expectations");
+
+
+        //кликаем на элемент
+        waitForElement(textField, 5).click();
+
+        //ждем и находим поисковую строку на странице поиска
+        waitForElement(searchField, 5).sendKeys("java");
+
+        //ждем появление первого результата поиска
+        WebElement firstElementSearchResult = waitForElement(firstSearchResult, 5);
+
+        //Создаем массив из результатов поиска
+        List<WebElement> webElementsList = driver.findElements(searResults);
+
+        //Проверяем что размер списка элементов больше 1-го
+        Assert.assertTrue("Incorrect array size", webElementsList.size() > 1);
+
+        //Кликаем по кнопке сброса поиска
+        driver.findElement(cancelSearchButton).click();
+
+        //Находим текст на странице с нулевым результатом поиска
+        WebElement emptySearchTextElement = waitForElement(emptySearchText, 5);
+
+        //Находим текст на странице с нулевым результатом поиска
+        WebElement emptySearchImgElement = waitForElement(emptySearchImg, 5);
+
+        //Проверяем что отсутствуют результаты поиска из предыдущего шага
+        Assert.assertNotEquals("The item is displayed", firstElementSearchResult, emptySearchTextElement);
     }
 
     @After
