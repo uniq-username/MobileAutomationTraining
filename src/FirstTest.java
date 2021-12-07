@@ -51,6 +51,8 @@ public class FirstTest {
     public void searchFieldContainsText()
     {
         By by = By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.view.ViewGroup/android.support.v4.view.ViewPager/android.view.ViewGroup/android.widget.FrameLayout/android.support.v7.widget.RecyclerView/android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.TextView");
+        //Поиск элемента по xpath
+
         assertElementHasText(by, "Поиск по Википедии", "Element text does not match expectations");
     }
 
