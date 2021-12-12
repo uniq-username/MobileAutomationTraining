@@ -86,6 +86,7 @@ public class FirstTest {
         capabilities.setCapability("appPackage", "org.wikipedia");
         capabilities.setCapability("appActivity", ".main.MainActivity");
         capabilities.setCapability("app", "/Users/ilya-slivakov/Desktop/LearnQa/MobileAutomationTraining/apks/org.wikipedia.apk");
+        capabilities.setCapability("orientation", "PORTRAIT");
 
         driver = new AndroidDriver(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
 
@@ -141,8 +142,6 @@ public class FirstTest {
         waitElementAndSendKeys(page.searchField, 5, "Java", "Cannot find element 'searchField'");
         //Кликаем на первый элемент на странице результатов поиска
         waitElementAndClick (page.selectSearchResultElement(1), "Cannot find element 'selectSearchResultElement'", 5);
-        //Запоминаем заголовок статьи
-        String viewPageTitleTextBefore = waitForElement(page.viewPageTitleText, 5, "Cannot find element 'viewPageTitleText'").getText();
         //Кликаем на кнопку меню
         waitElementAndClick(page.menuButton, "Cannot find element 'menuButton'", 5);
         //Находим и кликаем пункт меню
