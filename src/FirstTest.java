@@ -89,7 +89,7 @@ public class FirstTest {
 
         driver = new AndroidDriver(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
 
-        //Проверяем ориентацию экрана и если она не портретная то меняем
+        //Lesson_4_ex6: Проверяем ориентацию экрана и если она не портретная то меняем
         if (driver.getOrientation() != ScreenOrientation.PORTRAIT){
             driver.rotate(ScreenOrientation.PORTRAIT);
         }
@@ -187,6 +187,18 @@ public class FirstTest {
         //Проверяем заголовок на странице статьи
         String articleTitleText = waitForElement(page.viewPageTitleText, 5, "Cannot find element ''viewPageTitleText").getText();
         Assert.assertTrue(articleTitleText.contains("Java"));
+    }
+
+    @Test
+    public void Lesson4Ex6(){
+        PageObject page = new PageObject();
+        //Поиск элементов и поисковый запрос
+        waitElementAndClick(page.textField,"Cannot find element 'textField'",5);
+        waitElementAndSendKeys(page.searchField, 5, "Java", "Cannot find element 'searchField'");
+        //Кликаем на первый элемент на странице результатов поиска
+        waitElementAndClick(page.selectSearchResultElement(1), "Cannot find element 'selectSearchResultElement'", 5);
+        //Проверяем что на странице отображается заголовок
+        assertElementPresent(page.viewPageTitleText);
     }
 
     @After
