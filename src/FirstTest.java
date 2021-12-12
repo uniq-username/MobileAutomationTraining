@@ -3,15 +3,12 @@ import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import org.junit.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import javax.swing.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 class PageObject
 {
@@ -19,26 +16,25 @@ class PageObject
     public By selectSearchResultElement(int num)
     {
         return By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout[1]/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ListView/android.widget.LinearLayout[" + num + "]/android.widget.ImageView");
-                       ///hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout[1]/android.widget.FrameLayout[2]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ListView/android.widget.LinearLayout[1]/android.widget.ImageView
     }
-    //локатор строки поиска на главной странице по xpath
-    public By textField = By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.view.ViewGroup/android.support.v4.view.ViewPager/android.view.ViewGroup/android.widget.FrameLayout/android.support.v7.widget.RecyclerView/android.widget.FrameLayout[1]/android.widget.LinearLayout/android.widget.TextView");
-    //локатор строки поиска на странице поиска по id
+    //Локатор строки поиска на главной странице по xpath
+    public By textField = By.id("org.wikipedia:id/search_container");
+    //Локатор строки поиска на странице поиска по id
     public By searchField = By.id("org.wikipedia:id/search_src_text");
-    //локатор результатов поиска
+    //Локатор результатов поиска
     public By searResults = By.id("org.wikipedia:id/page_list_item_title");
-    //локатор кнопки сброса поиска
+    //Локатор кнопки сброса поиска
     public By cancelSearchButton = By.id("org.wikipedia:id/search_close_btn");
-    //локатор изображения страницы поиска без результатов
+    //Локатор изображения страницы поиска без результатов
     public By emptySearchImg = By.id("org.wikipedia:id/search_empty_image");
-    //локатор текста страницы поиска без результатов
+    //Локатор текста страницы поиска без результатов
     public By emptySearchText = By.id("org.wikipedia:id/search_empty_message");
-    //локатор заголовка страницы
+    //Локатор заголовка страницы
     public By viewPageTitleText = By.id("org.wikipedia:id/view_page_title_text");
-    //локатор кнопки меню на странице статьи
+    //Локатор кнопки меню на странице статьи
     public By menuButton = By.xpath("//android.widget.ImageView[@content-desc=\"Ещё\"]");
     //Локатор пункта меню сохранения статьи
-    public By menuItemMore = By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.ListView/android.widget.LinearLayout[3]/android.widget.RelativeLayout/android.widget.TextView");
+    public By menuItemMore = By.xpath("//*[@text = 'Добавить в список для чтения']");
     //Локатор кнопки онбординга
     public By acceptSaveArticleButton = By.id("android:id/button1");
     //Локатор кнопки перехода в сохраненные статьи в попапе
@@ -54,13 +50,19 @@ class PageObject
     //Локатор кнопки поиска на странице статьи
     public By searchButtonArticlePage = By.id("org.wikipedia:id/menu_page_search");
     //Локатор созданного списка в попапе
-    public By articleListName = By.id("org.wikipedia:id/item_title");
+    public By articleListName(String listName){
+        return By.xpath("//*[@text = '" + listName + "']");
+    }
     //Локатор кнопки выхода на главную
     public By closeArticlePageButton = By.xpath("//android.widget.ImageButton[@content-desc=\"Перейти вверх\"]");
     //Локатор кнопки списков сохраненных статей
     public By savedListButton = By.xpath("//android.widget.FrameLayout[@content-desc=\"Мои списки\"]/android.widget.ImageView\n");
     //Локатор заголовков сохраненных статей
     public By savedListArticleTitle = By.xpath("/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.ViewGroup/android.widget.ScrollView/android.widget.LinearLayout/android.support.v7.widget.RecyclerView/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.TextView[1]");
+    //Локатор сохраненных статей с текстом
+    public By articleInSavedListWithText(String text){
+        return  By.xpath("//*[./*[@text='" + text + "']]");
+    }
     //Локатор кнопки меню сохраненной статьи
     public By menuButtonSavedArticle = By.xpath("(//android.widget.ImageView[@content-desc=\"Другие параметры\"])[3]");
     //Локатор пункта удаления статьи из сохраненных
@@ -86,116 +88,110 @@ public class FirstTest {
         capabilities.setCapability("app", "/Users/ilya-slivakov/Desktop/LearnQa/MobileAutomationTraining/apks/org.wikipedia.apk");
 
         driver = new AndroidDriver(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
+
+        //Проверяем ориентацию экрана и если она не портретная то меняем
+        if (driver.getOrientation() != ScreenOrientation.PORTRAIT){
+            driver.rotate(ScreenOrientation.PORTRAIT);
+        }
     }
 
-
-
-    private void assertElementHasText(By by, String expectedText, String errorText){
-        WebElement element = waitForElement(by, 5);
-        Assert.assertTrue(errorText, element.getText().contains(expectedText));
-    }
-    private WebElement waitForElement(By by, long timeInSeconds){
+    protected WebElement waitForElement(By by, long timeInSeconds, String errorMessage){
         WebDriverWait wait = new WebDriverWait(driver, timeInSeconds);
+        wait.withMessage(errorMessage + "\n");
         return wait.until(ExpectedConditions.presenceOfElementLocated(by));
     }
 
-    protected void swipeTo(int timeOfSwipe, double startPosition, double endPosition)
+    protected void swipeTo(int timeOfSwipe, double startPositionX, double endPositionX, double startPositionY, double endPositionY)
     {
         TouchAction action = new TouchAction(driver);
-        Dimension size = driver.manage().window().getSize();
+        action.press((int)startPositionX, (int)startPositionY).waitAction().moveTo((int)endPositionX, (int)endPositionY).release().perform();
+    }
 
-        int x = (int)(size.width * 0.5);
-        int startPos = (int)(size.height * startPosition);
-        int endPos = (int)(size.height * endPosition);
+    protected void swipeElement(By by, String errorMessage){
+        WebElement element = waitForElement(by, 5, errorMessage);
+        int leftX = element.getLocation().getX();
+        int rightX = leftX + element.getSize().getWidth();
+        int leftY = element.getLocation().getY();
+        int rightY = leftY + element.getSize().getHeight();
 
-        action.press(x, startPos).waitAction().moveTo(x, endPos).release().perform();
+        swipeTo(5, leftX, rightX, leftY, rightY);
+    }
+
+    protected void waitElementAndClick(By by, String errorMessage, int timeOutInSeconds){
+        WebElement element = waitForElement(by, timeOutInSeconds, errorMessage);
+        element.click();
+    }
+
+    protected void waitElementAndSendKeys(By by, int timeOutInSeconds, String keys, String errorMessage){
+        WebElement element = waitForElement(by, timeOutInSeconds, errorMessage);
+        element.sendKeys(keys);
+    }
+
+    public void assertElementPresent(By by){
+        WebElement element = driver.findElement(by);
+        Assert.assertTrue(element.isDisplayed());
     }
 
     @Test
-    public void searchFieldContainsText()
+    public void lesson4Ex5()
     {
         PageObject page = new PageObject();
-
-        waitForElement(page.textField, 5).click();
-        waitForElement(page.searchField, 5).sendKeys("Java");
+        //Поиск элементов и поисковый запрос
+        waitElementAndClick(page.textField,"Cannot find element 'textField'",5);
+        waitElementAndSendKeys(page.searchField, 5, "Java", "Cannot find element 'searchField'");
         //Кликаем на первый элемент на странице результатов поиска
-        waitForElement(page.selectSearchResultElement(1), 5).click();
+        waitElementAndClick (page.selectSearchResultElement(1), "Cannot find element 'selectSearchResultElement'", 5);
         //Запоминаем заголовок статьи
-        String viewPageTitleTextBefore = waitForElement(page.viewPageTitleText, 5).getText();
+        String viewPageTitleTextBefore = waitForElement(page.viewPageTitleText, 5, "Cannot find element 'viewPageTitleText'").getText();
         //Кликаем на кнопку меню
-        waitForElement(page.menuButton, 5).click();
+        waitElementAndClick(page.menuButton, "Cannot find element 'menuButton'", 5);
         //Находим и кликаем пункт меню
-        waitForElement(page.menuItemMore, 5).click();
+        waitElementAndClick(page.menuItemMore, "Cannot find element 'menuItemMore'", 5);
         //Обработка появления онбординга
         try
         {
-            waitForElement(page.onboardingButton, 5).click();
+            waitElementAndClick(page.onboardingButton, "Cannot find element 'onboardingButton'", 5);
         }catch (Exception e){}
-
         //Находим, очищаем и заполняем поле имени нового списка
-        WebElement nameListField = waitForElement(page.saveListNameField, 5);
+        WebElement nameListField = waitForElement(page.saveListNameField, 5,"Cannot find element 'saveListNameField'");
         nameListField.clear();
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("hhmmss");
         String listName = "MyTestList" + dateFormat.format(date);
         nameListField.sendKeys(listName);
         //Тапаем на кнопку сохранения статьи в созданный список
-        waitForElement(page.acceptNameListButton, 5).click();
+        waitElementAndClick(page.acceptNameListButton, "Cannot find element acceptNameListButton", 5);
         //Тапаем на кнопку закрытия страницы статьи
-        waitForElement(page.closeArticlePageButton, 5).click();
+        waitElementAndClick(page.closeArticlePageButton, "Cannot find element closwArticleButton", 5);
         //Тапаем на строку поиска
-        waitForElement(page.textField, 5).click();
+        waitElementAndClick(page.textField, "Cannot find element textField", 5);
         //Вводим поисковый запрос и проваливаемся в статью
-        waitForElement(page.searchField, 5).sendKeys("Python");
+        waitElementAndSendKeys(page.searchField, 5, "Python", "Cannot find element 'searchField'");
         //Тапаем на результат поиска
-        waitForElement(page.selectSearchResultElement(1), 5).click();
+        waitElementAndClick(page.selectSearchResultElement(1), "Cannot find element 'selectSearchResultElement(1)'", 5);
         //Кликаем на кнопку меню на странице статьи и пункт меню
-        waitForElement(page.menuButton, 5).click();
-        waitForElement(page.menuItemMore, 5).click();
+        waitElementAndClick(page.menuButton, "Cannot find element 'menuButton'", 5);
+        waitElementAndClick(page.menuItemMore, "Cannot find element 'menuItemMore", 5);
         //Ждем появления, находим и кликаем на созданный список сохраненных статей
-        waitForElement(page.articleListName, 5);
-        List<WebElement> savedArticleList = driver.findElements(page.articleListName);
-        //Находим сохраненный список и кликаем на него
-        for (int i = 0; i < savedArticleList.size(); i++){
-            if(savedArticleList.get(i).getText().contains(listName)) {
-                savedArticleList.get(i).click();
-                break;
-            }
-        }
+        waitElementAndClick(page.articleListName(listName), "Cannot find element 'articleListName'", 5);
         //Тапаем на кнопку закрытия страницы статьи
-        waitForElement(page.closeArticlePageButton, 5).click();
+        waitElementAndClick(page.closeArticlePageButton, "Cannot find element 'closeArticleButton'", 5);
         //Тапаем на кнопку открытия списка сохраненных статей
-        waitForElement(page.savedListButton, 5).click();
+        waitElementAndClick(page.savedListButton, "Cannot find element 'savedListButton'", 5);
         //Находим на странице сохраненный список статей
-        List<WebElement> savedArticleListSecond = driver.findElements(page.articleListName);
-        //Находим сохраненный список и кликаем на него
-        for (int i = 0; i < savedArticleListSecond.size(); i++){
-            if(savedArticleListSecond.get(i).getText().contains(listName)) {
-                savedArticleListSecond.get(i).click();
-                break;
-            }
-        }
-        //Тапаем на кнопку меню и кнопку удаления статьи из сохраненных
-        WebElement menuButtonSavedArticle = waitForElement(page.menuButtonSavedArticle, 5);
-        List<WebElement> savedArticlesListbeforeDelete = driver.findElements(page.savedArticles);
-        Assert.assertTrue(savedArticlesListbeforeDelete.size() == 2);
-        menuButtonSavedArticle.click();
-
-        //Переходим в статью и сравниванием заголовок страницы
-        waitForElement(page.deleteSaveArticle, 5).click();
-        WebElement saveArticle = waitForElement(page.savedArticles, 5);
-        saveArticle.click();
-        WebElement viewPageTitleTextAfter = waitForElement(page.viewPageTitleText, 5);
-        Assert.assertTrue(viewPageTitleTextAfter.getText().contains(viewPageTitleTextBefore));
+        waitElementAndClick(page.articleListName(listName), "Cannot find element 'articleListName'", 5);
+        //Удаляем статью с текстом
+        swipeElement(page.articleInSavedListWithText("Python"), "Cannot find element 'articleInSavedListWithText'");
+        //Ищем и тапаем на оставшуюся статью
+        waitElementAndClick(page.articleInSavedListWithText("Java"), "Cannot find element 'articleInSavedListWithText'", 5);
+        //Проверяем заголовок на странице статьи
+        String articleTitleText = waitForElement(page.viewPageTitleText, 5, "Cannot find element ''viewPageTitleText").getText();
+        Assert.assertTrue(articleTitleText.contains("Java"));
     }
 
     @After
     public void tearDawn()
     {
-//        //Проверяем ориентацию экрана и если она не портретная то меняем
-//        if (driver.getOrientation() != ScreenOrientation.PORTRAIT){
-//            driver.rotate(ScreenOrientation.PORTRAIT);
-//        }
-        //driver.quit();
+        driver.quit();
     }
 }
